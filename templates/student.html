@@ -1,0 +1,107 @@
+{% extends "bootstrap/base.html" %}
+{% block title %} {{ student.name }} {% endblock %}
+{% block content %}
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP"
+ crossorigin="anonymous">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	<div class="collapse navbar-collapse" id="navbarNav">
+		<ul class="navbar-nav">
+			<li class="nav-item"><a class="nav-link" href={{ url_for('students') }}>Students</a></li>
+			<li class="nav-item"><a class="nav-link" href={{ url_for('courses') }}>Courses</a></li>
+			<li class="nav-item"><a class="nav-link" href={{ url_for('addStudent') }}>Add student</a></li>
+			<li class="nav-item"><a class="nav-link" href={{ url_for('addCourse') }}>Add course</a></li>
+		</ul>
+	</div>
+</nav>
+<br>
+<div class="container">
+	<h1>
+		<div class="d-flex justify-content-between">
+			<div>
+				Student {{ student.id }}
+			</div>
+			<div>
+				<a data-toggle="tooltip" title="Delete student" class="text-dark" href={{ url_for('delStudent', id=student.id) }}>
+					<i class="fas fa-trash-alt"></i>
+				</a>
+			</div>
+		</div>
+	</h1>
+	<table class="table">
+		<tr>
+			<td> Name </td>
+			<td> {{ student.name }} </td>
+		</tr>
+		<tr>
+			<td> Course </td>
+			<td> {{ student.course }} </td>
+		</tr>
+		<tr>
+			<td> Cumulative credits </td>
+			<td> {{ student.cum_credits }} </td>
+		</tr>
+		<tr>
+			<td> Cumulative grade point </td>
+			<td> {{ student.cum_grade_point }} </td>
+		</tr>
+		<tr>
+			<td> CGPA </td>
+			<td> {{ student.cgpa }} </td>
+		</tr>
+		<tr>
+			<td>
+				<h3>
+					Courses
+					<a data-toggle="tooltip" title="Enroll in new course" class="text-dark" href={{ url_for('addEnrollment', student_id=student.id) }}>
+						<i class="fas fa-plus-circle"></i>
+					</a>
+				</h3>
+			</td>
+		</tr>
+	</table>
+
+	<table class="table">
+		{% for s in range(6) %}
+		{% if StudentCourse.query.filter_by(student_id=student.id, semester=s+1).first() %}
+		<tr>
+			<td>
+				<h5>Semester {{s+1}}</h5>
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>Course ID</th>
+							<th>Course name</th>
+							<th>C1</th>
+							<th>C2</th>
+							<th>C3</th>
+							<th>C4</th>
+							<th>Attendance</th>
+							<th>Credit</th>
+							<th>Grade</th>
+							<th>Grade point</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for sc in StudentCourse.query.filter_by(student_id=student.id, semester=s+1) %}
+						<tr>
+							<td>{{ sc.course.id }}</td>
+							<td> <a href={{ url_for('getCourse', id=sc.course.id) }}> {{sc.course.name}} </a> </td>
+							<td>{{ sc.c1 }}</td>
+							<td>{{ sc.c2 }}</td>
+							<td>{{ sc.c3 }}</td>
+							<td>{{ sc.c4 }}</td>
+							<td>{{ sc.attendance }}</td>
+							<td>{{ sc.course.credit }}</td>
+							<td>{{ sc.grade }}</td>
+							<td>{{ sc.grade_point }}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</td>
+		</tr>
+		{% endif %}
+		{% endfor %}
+	</table>
+</div>
+{% endblock %}

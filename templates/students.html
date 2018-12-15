@@ -1,0 +1,49 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %} Students {% endblock %}
+{% block content %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	<div class="collapse navbar-collapse" id="navbarNav">
+		<ul class="navbar-nav">
+			<li class="nav-item active"><a class="nav-link" href={{ url_for('students') }}>Students</a></li>
+			<li class="nav-item"><a class="nav-link" href={{ url_for('courses') }}>Courses</a></li>
+			<li class="nav-item"><a class="nav-link" href={{ url_for('addStudent') }}>Add student</a></li>
+			<li class="nav-item"><a class="nav-link" href={{ url_for('addCourse') }}>Add course</a></li>
+		</ul>
+	</div>
+</nav>
+<br>
+<div class="container">
+	<h1>Students</h1>
+	<br>
+	<div>
+		{{ wtf.quick_form(form, form_type='inline')}}
+		<br>
+		<form method="POST" action="">
+			<table class="table table-hover">
+				<thead class="thead-dark">
+					<tr>
+						<th> Roll no. </th>
+						<th> Name </th>
+						<th> Course </th>
+						<th> Credits </th>
+						<th> Grade Point </th>
+						<th> CGPA </th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for s in students %}
+					<tr>
+						<td>{{ s.id }}</td>
+						<td><a href={{ url_for('getStudent', id=s.id) }}> {{ s.name }} </a></td>
+						<td>{{ s.course }}</td>
+						<td>{{ s.cum_credits }}</td>
+						<td>{{ s.cum_grade_point }}</td>
+						<td>{{ s.cgpa }}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</form>
+	</div>
+	{% endblock %}

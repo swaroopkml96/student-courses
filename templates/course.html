@@ -1,0 +1,102 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %} {{ course.name }} {% endblock %}
+{% block content %}
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP"
+ crossorigin="anonymous">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	<div class="collapse navbar-collapse" id="navbarNav">
+		<ul class="navbar-nav">
+			<li class="nav-item"><a class="nav-link" href={{ url_for('students') }}>Students</a></li>
+			<li class="nav-item"><a class="nav-link" href={{ url_for('courses') }}>Courses</a></li>
+			<li class="nav-item"><a class="nav-link" href={{ url_for('addStudent') }}>Add student</a></li>
+			<li class="nav-item"><a class="nav-link" href={{ url_for('addCourse') }}>Add course</a></li>
+		</ul>
+	</div>
+</nav>
+<br>
+<div class="container">
+	<h1>
+		<div class="d-flex justify-content-between">
+			<div>
+				Course {{ course.id }}
+			</div>
+			<div>
+				<a data-toggle="tooltip" title="Delete course" class="text-dark" href={{ url_for('delCourse', id=course.id) }}>
+					<i class="fas fa-trash-alt"></i>
+				</a>
+			</div>
+		</div>
+	</h1>
+	<table class="table">
+		<tr>
+			<td> Name </td>
+			<td> {{ course.name }} </td>
+		</tr>
+		<tr>
+			<td> Description </td>
+			<td> {{ course.desc }} </td>
+		</tr>
+		<tr>
+			<td> Type </td>
+			<td> {{ course.course_type }} </td>
+		</tr>
+		<tr>
+			<td> Credit </td>
+			<td> {{ course.credit }} </td>
+		</tr>
+		<tr>
+			<td> Practical </td>
+			<td>
+				{% if course.has_practical %}
+				Yes
+				{% else %}
+				No
+				{% endif %}
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<h3> Students </h3>
+			</td>
+		</tr>
+		<tr>
+		<tr>
+			<td>
+				{{ wtf.quick_form(form, form_type='inline') }}
+			</td>
+		</tr>
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th> Roll no. </th>
+					<th> Student name </th>
+					<th> C1 </th>
+					<th> C2 </th>
+					<th> C3 </th>
+					<th> C4 </th>
+					<th> Attendance </th>
+					<th> Grade </th>
+					<th> Grade Point </th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for sc in enrollments %}
+				<tr>
+					<td> {{ sc.student.id }} </td>
+					<td> <a href={{ url_for('getStudent', id=sc.student.id) }}> {{sc.student.name}} </a> </td>
+					<td> {{ sc.c1 }} </td>
+					<td> {{ sc.c2 }} </td>
+					<td> {{ sc.c3 }} </td>
+					<td> {{ sc.c4 }} </td>
+					<td> {{ sc.attendance }} </td>
+					<td> {{ sc.grade }} </td>
+					<td> {{ sc.grade_point }} </td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		</tr>
+	</table>
+</div>
+{% endblock %}
