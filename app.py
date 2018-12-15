@@ -6,8 +6,8 @@ from models import db, Student, Course, StudentCourse
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '210ec2b2d4555bb07cdf2b704070d321'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:bprop42@localhost/student_courses'
-#app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:bprop42@localhost/student_courses'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 with app.app_context():
