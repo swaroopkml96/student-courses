@@ -220,7 +220,10 @@ def updateStudents():
         for c in courses:
             cum_credits += c.course.credit
             cum_grade_point += c.grade_point
-        cgpa = cum_grade_point / cum_credits
+        if cum_credits > 0:
+            cgpa = cum_grade_point / cum_credits
+        else:
+            cgpa = 0
         s.cum_credits = cum_credits
         s.cum_grade_point = cum_grade_point
         s.cgpa = cgpa
