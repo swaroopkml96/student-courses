@@ -71,6 +71,7 @@
 				<tr>
 					<th> Roll no. </th>
 					<th> Student name </th>
+					<th> Semester </th>
 					<th> C1 </th>
 					<th> C2 </th>
 					<th> C3 </th>
@@ -85,6 +86,7 @@
 				<tr>
 					<td> {{ sc.student.id }} </td>
 					<td> <a href={{ url_for('getStudent', id=sc.student.id) }}> {{sc.student.name}} </a> </td>
+					<td> {{ sc.semester }}</td>
 					<td> {{ sc.c1 }} </td>
 					<td> {{ sc.c2 }} </td>
 					<td> {{ sc.c3 }} </td>
