@@ -1,10 +1,10 @@
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, StringField, SelectField, DecimalField, IntegerField, FormField, FieldList, SubmitField
 from wtforms.validators import DataRequired, Length, NumberRange
-from models import Course
 
 
 class StudentCourseForm(FlaskForm):
+    from models import db, Course
     semester = SelectField(
         'Semester',
         validators=[DataRequired()],
@@ -16,7 +16,7 @@ class StudentCourseForm(FlaskForm):
     c = SelectField(
         'Course',
         choices=[(course.id, course.name)
-                 for course in Course.query.all()]
+                 for course in db.session.query(Course).all()]
     )
     c1 = DecimalField('C1', validators=[NumberRange(min=0, max=20)], places=2)
     c2 = DecimalField('C2', validators=[NumberRange(min=0, max=20)], places=2)
@@ -84,6 +84,8 @@ class CourseStudentFilters(FlaskForm):
 
 
 class StudentsFilters(FlaskForm):
+    from models import Course
+    from app import db
     orderby = SelectField(
         'Sort by',
         choices=[
