@@ -1,5 +1,6 @@
 # student-courses
 A web application to manage students and courses in a university
+
 Deployed on heroku at https://university-courses.herokuapp.com/
 
 Using:
