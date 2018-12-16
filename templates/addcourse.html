@@ -1,39 +1,28 @@
-{% extends "bootstrap/base.html" %}
+{% extends "base.html" %}
 {% block title %} Add course {% endblock %}
-{% import "bootstrap/wtf.html" as wtf %}
-{% block content %}
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-	<div class="collapse navbar-collapse" id="navbarNav">
-		<ul class="navbar-nav">
-			<li class="nav-item"><a class="nav-link" href={{ url_for('students') }}>Students</a></li>
-			<li class="nav-item"><a class="nav-link" href={{ url_for('courses') }}>Courses</a></li>
-			<li class="nav-item"><a class="nav-link" href={{ url_for('addStudent') }}>Add student</a></li>
-			<li class="nav-item active"><a class="nav-link" href={{ url_for('addCourse') }}>Add course</a></li>
-		</ul>
-	</div>
-</nav>
-<br>
+{% block mycontent %}
 <div class="container">
 	<h1>Add course</h1>
 	<form method="POST" action="">
+		{{ form.hidden_tag() }}
 		<div class="form-group">
-			{{ wtf.form_field(form.name, class='form-control', size=20) }}
+			{{ render_field(form.name) }}
 		</div>
 		<div class="form-group">
-			{{ wtf.form_field(form.desc, class='form-control') }}
+			{{ render_field(form.desc) }}
 		</div>
 		<div class="form-group">
-			{{ wtf.form_field(form.course_type, class='form-control') }}
+			{{ render_field(form.course_type) }}
 		</div>
 		<div class="form-group">
-			{{ wtf.form_field(form.credit, class='form-control') }}
+			{{ render_field(form.credit) }}
 		</div>
 		<div class="form-group">
-			{{ wtf.form_field(form.has_practical, class='form-control') }}
+			{{ render_field(form.has_practical) }}
 		</div>
 		<div class="form-group">
 			{{ wtf.form_field(form.submit, class='btn btn-outline-info') }}
 		</div>
 	</form>
 </div>
-{% endblock %}
+{% endblock mycontent %}

@@ -1,38 +1,37 @@
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, StringField, SelectField, DecimalField, IntegerField, FormField, FieldList, SubmitField
-from wtforms.validators import DataRequired, Length, NumberRange
+from wtforms import BooleanField, StringField, SelectField, DecimalField, IntegerField, SubmitField
+from wtforms.validators import DataRequired, InputRequired, NumberRange, ValidationError
 
 
 class StudentCourseForm(FlaskForm):
     from models import db, Course
     semester = SelectField(
         'Semester',
-        validators=[DataRequired()],
         choices=[
-            ('1', 1), ('2', 2), ('3', 3),
-            ('4', 4), ('5', 5), ('6', 6)
-        ]
+            (1, '1'), (2, '2'), (3, '3'),
+            (4, '4'), (5, '5'), (6, '6')
+        ],
+        coerce=int
     )
     c = SelectField(
         'Course',
         choices=[(course.id, course.name)
-                 for course in db.session.query(Course).all()]
+                 for course in db.session.query(Course).all()],
+        coerce=int
     )
-    c1 = DecimalField('C1', validators=[NumberRange(min=0, max=20)], places=2)
-    c2 = DecimalField('C2', validators=[NumberRange(min=0, max=20)], places=2)
-    c3 = DecimalField('C3', validators=[NumberRange(min=0, max=20)], places=2)
-    c4 = DecimalField('C4', validators=[NumberRange(min=0, max=40)], places=2)
+    c1 = DecimalField(validators=[InputRequired(), NumberRange(min=0, max=20)])
+    c2 = DecimalField(validators=[InputRequired(), NumberRange(min=0, max=20)])
+    c3 = DecimalField(validators=[InputRequired(), NumberRange(min=0, max=20)])
+    c4 = DecimalField(validators=[InputRequired(), NumberRange(min=0, max=40)])
     attendance = DecimalField(
-        'Attendance', validators=[NumberRange(min=0, max=100)], places=2)
+        validators=[InputRequired(), NumberRange(min=0, max=100)])
     submit = SubmitField('Add')
 
 
 class StudentForm(FlaskForm):
-    name = StringField('Name', validators=[
-        DataRequired(), Length(min=1)])
+    name = StringField('Name', validators=[DataRequired()])
     course = SelectField(
         'Course',
-        validators=[DataRequired()],
         choices=[
             ('MSc', 'MSc'), ('MCA', 'MCA'),
             ('MTech', 'MTech'), ('MPhil', 'MPhil')
@@ -42,16 +41,14 @@ class StudentForm(FlaskForm):
 
 
 class CourseForm(FlaskForm):
-    name = StringField('Name', validators=[
-        DataRequired(), Length(min=1)])
-    desc = StringField('Description', validators=[
-        DataRequired(), Length(min=1)])
+    name = StringField('Name', validators=[DataRequired()])
+    desc = StringField('Description', validators=[DataRequired()])
     course_type = SelectField(
         'Type',
-        validators=[DataRequired()],
         choices=[('HC', 'HC'), ('SC', 'SC'), ('OE', 'OE')]
     )
-    credit = IntegerField('Credit', validators=[DataRequired()])
+    credit = IntegerField('Credit', validators=[
+                          InputRequired(), NumberRange(min=0)])
     has_practical = BooleanField('Has practical')
     submit = SubmitField('Add')
 
@@ -75,6 +72,7 @@ class CourseStudentFilters(FlaskForm):
         'Sort by',
         choices=[
             ('student_id', 'Roll no.'),
+            ('semester', 'Semester'),
             ('grade', 'Grade')
         ]
     )
@@ -102,12 +100,14 @@ class StudentsFilters(FlaskForm):
     course1 = SelectField(
         'Course',
         choices=[(0, 'Any')] + [(course.id, course.name)
-                                for course in Course.query.all()]
+                                for course in Course.query.all()],
+        coerce=int
     )
     course2 = SelectField(
         'Course',
         choices=[(0, 'Any')] + [(course.id, course.name)
-                                for course in Course.query.all()]
+                                for course in Course.query.all()],
+        coerce=int
     )
     sem = SelectField(
         'Semester',

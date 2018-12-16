@@ -1,6 +1,6 @@
 import math
 import os
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request, flash
 from flask_bootstrap import Bootstrap
 from models import db, Student, Course, StudentCourse
 
@@ -23,14 +23,13 @@ def home():
 @app.route("/students", methods=['GET', 'POST'])
 def students():
     from forms import StudentsFilters
-    form = StudentsFilters()
+    form = StudentsFilters(request.form)
     students = Student.query
-    if request.method == 'POST':
-        r = request.form
-        orderby = r['orderby']
-        course1 = int(r['course1'])
-        course2 = int(r['course2'])
-        sem = int(r['sem'])
+    if request.method == 'POST' and form.validate():
+        orderby = form.orderby.data
+        course1 = form.course1.data
+        course2 = form.course2.data
+        sem = form.sem.data
 
         if (not course1 == 0) and (not course2 == 0):
             students = students.join(Student.courses).filter(
@@ -55,9 +54,9 @@ def students():
                 StudentCourse.semester == sem
             )
 
-        if 'cgpa9' in r.keys():
+        if form.cgpa9.data:
             students = students.filter(Student.cgpa > 9)
-        if 'rev' in r.keys():
+        if form.rev.data:
             students = students.order_by(getattr(Student, orderby).desc())
         else:
             students = students.order_by(getattr(Student, orderby))
@@ -72,10 +71,12 @@ def getStudent(id):
 @app.route("/addstudent", methods=['GET', 'POST'])
 def addStudent():
     from forms import StudentForm
-    form = StudentForm()
-    if request.method == "POST":
-        r = request.form
-        s = getStudentObject(r)
+    form = StudentForm(request.form)
+    if request.method == "POST" and form.validate():
+        s = Student(
+            name=form.name.data,
+            course=form.course.data
+        )
         db.session.add(s)
         db.session.commit()
     return render_template('addstudent.html', form=form)
@@ -92,14 +93,13 @@ def delStudent(id):
 @app.route("/courses", methods=['GET', 'POST'])
 def courses():
     from forms import CoursesFilters
-    form = CoursesFilters()
+    form = CoursesFilters(request.form)
     courses = Course.query
-    if request.method == 'POST':
-        r = request.form
-        orderby = r['orderby']
-        if 'hp' in r.keys():
+    if request.method == 'POST' and form.validate():
+        orderby = form.orderby.data
+        if form.hp.data:
             courses = courses.filter_by(has_practical=True)
-        if 'rev' in r.keys():
+        if form.rev.data:
             courses = courses.order_by(getattr(Course, orderby).desc())
         else:
             courses = courses.order_by(getattr(Course, orderby))
@@ -109,15 +109,14 @@ def courses():
 @app.route("/course/<id>", methods=['GET', 'POST'])
 def getCourse(id):
     from forms import CourseStudentFilters
-    form = CourseStudentFilters()
+    form = CourseStudentFilters(request.form)
     course = Course.query.get(id)
     enrollments = StudentCourse.query.filter_by(course_id=id)
-    if request.method == 'POST':
-        r = request.form
-        orderby = r['orderby']
-        if 'attn' in r.keys():
+    if request.method == 'POST' and form.validate():
+        orderby = form.orderby.data
+        if form.attn.data:
             enrollments = enrollments.filter(StudentCourse.attendance < 75)
-        if 'rev' in r.keys():
+        if form.rev.data:
             enrollments = enrollments.order_by(
                 getattr(StudentCourse, orderby).desc())
         else:
@@ -128,10 +127,17 @@ def getCourse(id):
 @app.route("/addcourse", methods=['GET', 'POST'])
 def addCourse():
     from forms import CourseForm
-    form = CourseForm()
-    if request.method == "POST":
-        r = request.form
-        c = getCourseObject(r)
+    form = CourseForm(request.form)
+    if request.method == 'POST':
+        if not form.validate():
+            print(form.errors)
+        c = Course(
+            name=form.name.data,
+            course_type=form.course_type.data,
+            has_practical=form.has_practical.data,
+            desc=form.desc.data,
+            credit=form.credit.data
+        )
         db.session.add(c)
         db.session.commit()
     return render_template('addcourse.html', form=form)
@@ -150,10 +156,9 @@ def delCourse(id):
 @app.route("/addenrollment/<student_id>", methods=['GET', 'POST'])
 def addEnrollment(student_id):
     from forms import StudentCourseForm
-    form = StudentCourseForm()
-    if request.method == "POST":
-        r = request.form
-        sc = getStudentCourseObject(r, student_id)
+    form = StudentCourseForm(request.form)
+    if request.method == "POST" and form.validate():
+        sc = getStudentCourseObject(form, student_id)
         db.session.add(sc)
         db.session.commit()
         updateStudents()
@@ -162,34 +167,12 @@ def addEnrollment(student_id):
 
 
 # Convenience functions
-def getStudentObject(formData):
-    s = Student(
-        name=formData['name'],
-        course=formData['course'],
-    )
-    return s
-
-
-def getCourseObject(formData):
-    has_practical = False
-    if 'has_practical' in formData.keys():
-        has_practical = True
-    c = Course(
-        name=formData['name'],
-        course_type=formData['course_type'],
-        has_practical=has_practical,
-        desc=formData['desc'],
-        credit=formData['credit']
-    )
-    return c
-
-
-def getStudentCourseObject(formData, student_id):
-    course_id = formData['c']
-    c1 = float(formData['c1'])
-    c2 = float(formData['c2'])
-    c3 = float(formData['c3'])
-    c4 = float(formData['c4'])
+def getStudentCourseObject(form, student_id):
+    course_id = form.c.data
+    c1 = form.c1.data
+    c2 = form.c2.data
+    c3 = form.c3.data
+    c4 = form.c4.data
 
     course = Course.query.get(course_id)
     credit = course.credit
@@ -203,10 +186,10 @@ def getStudentCourseObject(formData, student_id):
         c2=c2,
         c3=c3,
         c4=c4,
-        attendance=formData['attendance'],
+        attendance=form.attendance.data,
         grade=grade,
         grade_point=grade_point,
-        semester=formData['semester'],
+        semester=form.semester.data,
     )
     return sc
 
