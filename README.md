@@ -16,4 +16,4 @@ Deployed on heroku at https://university-courses.herokuapp.com/
 4. Wtf (Forms)
 5. Bootstrap (CSS framework)
 
-I made this during a week of the [#100DaysOfCode](https://www.100daysofcode.com/) challenge
+Developed during a week of the [#100DaysOfCode](https://www.100daysofcode.com/) challenge
